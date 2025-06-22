@@ -1,3 +1,13 @@
+## ⚠️ ÖNEMLİ NOT
+
+> **Şu bilgilerle giriş yapabilirsiniz: kullanıcı adı: Recep şifre: 123456**
+
+> **.env.local dosyası oluşturun: .env.example dosyasını .env.local olarak kopyalayın ve kendi bilgilerinizi girin**
+
+> 🚨 **Veritabanı henüz bağlı değil.**
+
+> Bu nedenle, **veri ekleme, silme, güncelleme gibi işlemler yalnızca local ortamda çalışmaktadır.**
+
 # Application Security Platform
 
 Bu proje, uygulama güvenliği yönetimi için geliştirilmiş modern bir web platformudur. Güvenlik açıklarını izleme, analiz etme ve raporlama özellikleri sunar.
@@ -122,9 +132,3 @@ http://localhost:3000
 - Bu sayfada:
   - Zaafiyetin detaylı açıklamaları yer alır.
   - Güncelleme (edit) işlemleri yapılabilir.
-
-## ⚠️ ÖNEMLİ NOT
-
-> **Şu bilgilerle giriş yapabilirsiniz: kullanıcı adı: Recep şifre: 123456** > **.env.local dosyası oluşturun: .env.example dosyasını .env.local olarak kopyalayın ve kendi bilgilerinizi girin**
-> 🚨 **Veritabanı henüz bağlı değil.**  
-> Bu nedenle, **veri ekleme, silme, güncelleme gibi işlemler yalnızca local ortamda çalışmaktadır.**
