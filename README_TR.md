@@ -95,7 +95,7 @@ http://localhost:3000
 
 - Giriş formundaki **Sign Up** butonuna tıklayarak kayıt formuna geçebilirsiniz.
 - Kayıt bilgileri `data/users.json` dosyasına kaydedilir.
-- Uygulama şu anda gerçek bir veritabanı kullanmamaktadır.
+- Uygulama şu anda gerçek bir veritabanı kullanmamaktadır. Local'de register çalışıyor ama Production'da veritabanı olmadığı için şu credentials'ı kullanın: Kullanıcı adı: Recep şifre:123456
 
 ## Dashboard
 
@@ -122,3 +122,9 @@ http://localhost:3000
 - Bu sayfada:
   - Zaafiyetin detaylı açıklamaları yer alır.
   - Güncelleme (edit) işlemleri yapılabilir.
+
+## ⚠️ ÖNEMLİ NOT
+
+> **Şu bilgilerle giriş yapabilirsiniz: kullanıcı adı: Recep şifre: 123456** > **.env.local dosyası oluşturun: .env.example dosyasını .env.local olarak kopyalayın ve kendi bilgilerinizi girin**
+> 🚨 **Veritabanı henüz bağlı değil.**  
+> Bu nedenle, **veri ekleme, silme, güncelleme gibi işlemler yalnızca local ortamda çalışmaktadır.**
