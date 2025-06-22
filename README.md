@@ -10,7 +10,7 @@ This project is a modern web platform developed for application security managem
 
 ## 🚀 Live Demo
 
-**Live URL:** url
+**Live URL:** uhttps://application-security-platform.vercel.app/
 
 ## 🛠️ Technology Choices
 

@@ -4,7 +4,7 @@ Bu proje, uygulama güvenliği yönetimi için geliştirilmiş modern bir web pl
 
 ## 🚀 Canlı Demo
 
-**Canlı URL:** url
+**Canlı URL:** https://application-security-platform.vercel.app/
 
 ## 🛠️ Teknoloji Seçimleri
 
