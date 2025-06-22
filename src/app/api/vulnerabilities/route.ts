@@ -21,7 +21,7 @@ const writeData = async (data: any) => {
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(request.url, "http://localhost:3000");
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const searchTerm = searchParams.get("search")?.toLowerCase() || "";
@@ -164,7 +164,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(request.url, "http://localhost:3000");
   const id = searchParams.get("id");
   if (!id)
     return NextResponse.json({ message: "ID is required" }, { status: 400 });

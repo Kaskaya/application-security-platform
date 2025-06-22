@@ -14,10 +14,8 @@ export default async function VulnerabilityDetailPage({
     redirect("/signin");
   }
   const { id } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const url = baseUrl
-    ? `${baseUrl}/api/vulnerabilities/${id}`
-    : `/api/vulnerabilities/${id}`;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const url = `${baseUrl}/api/vulnerabilities/${id}`;
   const res = await fetch(url);
   if (!res.ok) {
     notFound();
