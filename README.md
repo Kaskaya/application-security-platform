@@ -1,6 +1,7 @@
 ## ⚠️ IMPORTANT NOTE
 
-> **Sign in with these credentials: username: Recep password: 123456** > **Create a .env.local file: Copy .env.example to .env.local and fill in your own credentials**
+> **Sign in with these credentials: username: Recep password: 123456**
+> **Create a .env.local file: Copy .env.example to .env.local and fill in your own credentials**
 > 🚨 **The database is not yet connected.**  
 > Therefore, **operations such as adding, deleting, and updating data only work in the local environment.**
 
