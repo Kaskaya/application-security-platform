@@ -22,7 +22,7 @@ This project is a modern web platform developed for application security managem
   - Responsive design support
 - **Lucide React**: Modern icon library
 - **React Icons**: Large icon collection
-- **Finisher.co Animations**: Dynamic background particle animation using the Finisher.co library
+- **Finisher.co Animations**: Dynamic background particle animation using the Finisher library
 
 #### Glassmorphism Effect
 
