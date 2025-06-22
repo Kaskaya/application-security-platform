@@ -56,7 +56,7 @@ Bu proje, uygulama güvenliği yönetimi için geliştirilmiş modern bir web pl
 1. **Projeyi klonlayın:**
 
 ```bash
-git clone [repository-url]
+git clone https://github.com/Kaskaya/application-security-platform.git
 cd application-security-platform
 ```
 

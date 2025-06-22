@@ -56,7 +56,7 @@ This project is a modern web platform developed for application security managem
 1. **Clone the repository:**
 
 ```bash
-git clone [repository-url]
+git clone https://github.com/Kaskaya/application-security-platform.git
 cd application-security-platform
 ```
 
