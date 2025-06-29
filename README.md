@@ -1,12 +1,3 @@
-## ⚠️ IMPORTANT NOTE
-
-> **Sign in with these credentials: username: Recep password: 123456**
-
-> **Create a .env.local file: Copy .env.example to .env.local and fill in your own credentials**
-
-> 🚨 **The database is not yet connected.**  
-> Therefore, **operations such as adding, deleting, and updating data only work in the local environment.**
-
 # Application Security Platform
 
 This project is a modern web platform developed for application security management. It offers features for tracking, analyzing, and reporting vulnerabilities.
@@ -47,6 +38,13 @@ This project is a modern web platform developed for application security managem
 
 - **NextAuth.js**: Secure authentication system
 
+### Database
+
+- **Supabase**: PostgreSQL-based backend-as-a-service
+  - Real-time database with automatic API generation
+  - Built-in authentication and authorization
+  - Row Level Security (RLS) for data protection
+
 ### Data Visualization
 
 - **Recharts**: Powerful charting library for React
@@ -59,6 +57,7 @@ This project is a modern web platform developed for application security managem
 
 - Node.js 18+
 - npm or yarn
+- Supabase account and project
 
 ### Setup
 
@@ -77,15 +76,13 @@ npm install
 yarn install
 ```
 
-3. **Start the development server:**
-
 ```bash
 npm run dev
 # or
 yarn dev
 ```
 
-4. **Open in your browser:**
+6. **Open in your browser:**
 
 ```
 http://localhost:3000
@@ -103,8 +100,7 @@ http://localhost:3000
 ## Sign Up
 
 - You can switch to the registration form by clicking the **Sign Up** button on the login form.
-- Registration information is saved to the `data/users.json` file.
-- The application does not currently use a real database. Registration works locally, but since there is no database in production, use the following credentials to log in: Username: Recep Password: 123456
+- User data is stored securely in the Supabase database.
 
 ## Dashboard
 
@@ -123,7 +119,7 @@ http://localhost:3000
   - Vulnerability table
   - Search, sort, add, delete, and edit operations
   - Data import from JSON and CSV files
-- All data is stored in the `data/vulnerabilities` directory.
+- All data is stored in the Supabase database.
 
 ## Vulnerability Detail Page
 
