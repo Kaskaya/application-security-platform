@@ -22,6 +22,26 @@ export default async function Home() {
     redirect("/signin");
   }
 
+  // Check if Supabase client is available
+  if (!supabase) {
+    console.error("Supabase client not initialized");
+    return (
+      <main className="bg-[#16171D] w-full rounded-b-4xl flex flex-col gap-4 p-4 md:p-8 text-slate-50">
+        <div className="">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl text-slate-50">
+            Your Security Program
+          </h2>
+        </div>
+        <StatsCards />
+        <ChartsSection />
+        <div className="flex flex-col 2xl:flex-row gap-4 text-xl">
+          <RemediationsList remediations={[]} />
+          <InvestigationsList vulnerabilities={[]} />
+        </div>
+      </main>
+    );
+  }
+
   // Fetch vulnerabilities from Supabase
   const { data: vulnerabilities, error } = await supabase
     .from("vulnerabilities")

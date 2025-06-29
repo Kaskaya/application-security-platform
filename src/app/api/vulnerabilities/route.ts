@@ -3,6 +3,13 @@ import { supabase } from "@/lib/supabase";
 
 export async function GET(request: Request) {
   try {
+    if (!supabase) {
+      return NextResponse.json(
+        { message: "Database connection not available" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url, "http://localhost:3000");
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
@@ -110,6 +117,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    if (!supabase) {
+      return NextResponse.json(
+        { message: "Database connection not available" },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const now = new Date().toISOString();
 
@@ -168,6 +182,13 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    if (!supabase) {
+      return NextResponse.json(
+        { message: "Database connection not available" },
+        { status: 500 }
+      );
+    }
+
     const updatedItem = await request.json();
     const now = new Date().toISOString();
 
@@ -232,6 +253,13 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    if (!supabase) {
+      return NextResponse.json(
+        { message: "Database connection not available" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url, "http://localhost:3000");
     const id = searchParams.get("id");
 
