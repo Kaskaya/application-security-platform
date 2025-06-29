@@ -1,24 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@supabase/supabase-js";
 
-const usersFilePath = path.join(process.cwd(), "data", "users.json");
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Helper function to read users data
-async function readUsers() {
-  try {
-    const data = await fs.readFile(usersFilePath, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-}
-
-// Helper function to write users data
-async function writeUsers(users: any[]) {
-  await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
-}
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,11 +25,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Read existing users
-    const users = await readUsers();
-
     // Check if username already exists
-    const existingUser = users.find((user: any) => user.username === username);
+    const { data: existingUser, error: userError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", username)
+      .single();
+
+    if (userError && userError.code !== "PGRST116") {
+      console.error("Database error checking username:", userError);
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
+
     if (existingUser) {
       return NextResponse.json(
         { error: "Username already exists" },
@@ -52,7 +45,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if email already exists
-    const existingEmail = users.find((user: any) => user.email === email);
+    const { data: existingEmail, error: emailError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (emailError && emailError.code !== "PGRST116") {
+      console.error("Database error checking email:", emailError);
+      return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
+
     if (existingEmail) {
       return NextResponse.json(
         { error: "Email already exists" },
@@ -61,20 +64,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new user
-    const newUser = {
-      id: uuidv4(),
-      username,
-      password,
-      email,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const now = new Date().toISOString();
+    const { data: newUser, error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          username,
+          password,
+          email,
+          created_at: now,
+          updated_at: now,
+        },
+      ])
+      .select()
+      .single();
 
-    // Add user to the array
-    users.push(newUser);
-
-    // Write back to file
-    await writeUsers(users);
+    if (insertError) {
+      console.error("Database insert error:", insertError);
+      return NextResponse.json(
+        { error: "Failed to create user" },
+        { status: 500 }
+      );
+    }
 
     // Return user data without password
     const { password: _, ...userWithoutPassword } = newUser;

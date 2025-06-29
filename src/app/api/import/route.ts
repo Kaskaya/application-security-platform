@@ -1,29 +1,13 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@supabase/supabase-js";
 
-const importDataFilePath = path.join(
-  process.cwd(),
-  "data",
-  "vulnerabilities.json"
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-const readImportData = async () => {
-  try {
-    const fileData = await fs.readFile(importDataFilePath, "utf-8");
-    return fileData.trim() ? JSON.parse(fileData) : [];
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return [];
-    }
-    throw error;
-  }
-};
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function POST(request: Request) {
   try {
-    const existingData = await readImportData();
     const { data: importedData } = await request.json();
     if (!Array.isArray(importedData)) {
       return NextResponse.json(
@@ -31,62 +15,81 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
     const now = new Date().toISOString();
-
-    const newVulnerabilities = importedData.map((item: any) => ({
-      title: item.title || "Başlık Yok",
-      description: item.description || "Açıklama Yok",
-      severity: item.severity || "Medium",
-      status: item.status || "Open",
-      cve: item.cve || "",
-      affectedComponent: item.affectedComponent || "Bilinmiyor",
-      reportedBy: item.reportedBy || "İçe Aktarma",
-      riskScore: item.riskScore || 0,
-      id: item.id || uuidv4(),
-      createdAt: item.createdAt || now,
-      updatedAt: now, // Always update the updatedAt timestamp
-    }));
-
-    // Create a map of existing data by ID for quick lookup
-    const existingDataMap = new Map(
-      existingData.map((item: any) => [item.id, item])
-    );
-
     let updatedCount = 0;
     let addedCount = 0;
 
     // Process each imported vulnerability
-    newVulnerabilities.forEach((newItem) => {
-      if (existingDataMap.has(newItem.id)) {
-        // Update existing record
-        existingDataMap.set(newItem.id, newItem);
-        updatedCount++;
+    for (const item of importedData) {
+      const vulnerabilityData = {
+        title: item.title || "Untitled",
+        description: item.description || "No description",
+        severity: item.severity || "Medium",
+        status: item.status || "Open",
+        cve: item.cve || "",
+        affected_component: item.affectedComponent || "Unknown",
+        reported_by: item.reportedBy || "Import",
+        risk_score: item.riskScore || 0,
+        updated_at: now,
+      };
+
+      if (item.id) {
+        // Try to update existing record
+        const { data: existing, error: checkError } = await supabase
+          .from("vulnerabilities")
+          .select("id")
+          .eq("id", item.id)
+          .single();
+
+        if (existing) {
+          // Update existing record
+          const { error: updateError } = await supabase
+            .from("vulnerabilities")
+            .update(vulnerabilityData)
+            .eq("id", item.id);
+
+          if (updateError) {
+            console.error("Update error for ID", item.id, updateError);
+          } else {
+            updatedCount++;
+          }
+        } else {
+          // Insert as new record
+          const { error: insertError } = await supabase
+            .from("vulnerabilities")
+            .insert([vulnerabilityData]);
+
+          if (insertError) {
+            console.error("Insert error for item", item.title, insertError);
+          } else {
+            addedCount++;
+          }
+        }
       } else {
-        // Add new record
-        existingDataMap.set(newItem.id, newItem);
-        addedCount++;
+        // Insert as new record (no ID provided)
+        const { error: insertError } = await supabase
+          .from("vulnerabilities")
+          .insert([vulnerabilityData]);
+
+        if (insertError) {
+          console.error("Insert error for item", item.title, insertError);
+        } else {
+          addedCount++;
+        }
       }
-    });
-
-    // Convert map back to array
-    const combinedData = Array.from(existingDataMap.values());
-
-    await fs.writeFile(
-      importDataFilePath,
-      JSON.stringify(combinedData, null, 2),
-      "utf-8"
-    );
+    }
 
     return NextResponse.json({
       message: "Data imported successfully",
       updated: updatedCount,
       added: addedCount,
-      total: combinedData.length,
+      total: updatedCount + addedCount,
     });
   } catch (error) {
-    console.error("Import API Error:", error);
+    console.error("Import error:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Import failed", error: "Internal server error" },
       { status: 500 }
     );
   }

@@ -15,8 +15,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(options);
-  const isAuthenticated = !!session;
+  let session = null;
+  let isAuthenticated = false;
+
+  try {
+    session = await getServerSession(options);
+    isAuthenticated = !!session;
+  } catch (error) {
+    console.error("Session error:", error);
+    // If there's a session error, treat as not authenticated
+    isAuthenticated = false;
+  }
+
   return (
     <html lang="en">
       <body className="bg-[#1E1F28]">

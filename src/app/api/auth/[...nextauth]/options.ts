@@ -1,31 +1,41 @@
 import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { promises as fs } from "fs";
-import path from "path";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { createClient } from "@supabase/supabase-js";
 
-const usersFilePath = path.join(process.cwd(), "data", "users.json");
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Helper function to read users data
-async function readUsers() {
-  try {
-    const data = await fs.readFile(usersFilePath, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-}
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Debug environment variables
+console.log("🔍 NextAuth Environment Variables:");
+console.log("GITHUB_ID:", process.env.GITHUB_ID);
+console.log(
+  "GITHUB_SECRET:",
+  process.env.GITHUB_SECRET ? "***SET***" : "NOT SET"
+);
+console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log(
+  "GOOGLE_CLIENT_SECRET:",
+  process.env.GOOGLE_CLIENT_SECRET ? "***SET***" : "NOT SET"
+);
+console.log(
+  "NEXTAUTH_SECRET:",
+  process.env.NEXTAUTH_SECRET ? "***SET***" : "NOT SET"
+);
+console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
 
 export const options: NextAuthOptions = {
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -43,20 +53,32 @@ export const options: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const users = await readUsers();
-          const user = users.find(
-            (u: any) =>
-              u.username === credentials?.username &&
-              u.password === credentials?.password
-          );
+          if (!credentials?.username || !credentials?.password) {
+            return null;
+          }
 
-          if (user) {
+          // Query user from Supabase
+          const { data: user, error } = await supabase
+            .from("users")
+            .select("id, username, email, password")
+            .eq("username", credentials.username)
+            .single();
+
+          if (error || !user) {
+            console.log("User not found:", credentials.username);
+            return null;
+          }
+
+          // Check password (in production, you should hash passwords)
+          if (user.password === credentials.password) {
             return {
               id: user.id,
               name: user.username,
               email: user.email,
             };
           }
+
+          console.log("Invalid password for user:", credentials.username);
           return null;
         } catch (error) {
           console.error("Auth error:", error);
@@ -72,6 +94,7 @@ export const options: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  debug: true, // Enable debug mode
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
