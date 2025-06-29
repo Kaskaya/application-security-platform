@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { redirect } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ChartsSection } from "@/components/dashboard/ChartsSection";
 import { RemediationsList } from "@/components/dashboard/RemediationsList";
@@ -21,11 +21,6 @@ export default async function Home() {
   if (!session) {
     redirect("/signin");
   }
-
-  // Initialize Supabase client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   // Fetch vulnerabilities from Supabase
   const { data: vulnerabilities, error } = await supabase
